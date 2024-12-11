@@ -25,3 +25,10 @@ export function fToNow(date) {
       })
     : '';
 }
+
+export function createPreview(file) {
+  if (file instanceof File) {
+    return URL.createObjectURL(file);
+  }
+  return file;
+}

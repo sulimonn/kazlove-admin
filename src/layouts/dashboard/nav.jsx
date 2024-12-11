@@ -1,13 +1,12 @@
-import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
+import { Chip } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import { alpha } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import ListItemButton from '@mui/material/ListItemButton';
 
 import { usePathname } from 'src/routes/hooks';
@@ -15,9 +14,8 @@ import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { account } from 'src/_mock/account';
-
 import Logo from 'src/components/logo';
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { NAV } from './config-layout';
@@ -37,66 +35,12 @@ export default function Nav({ openNav, onCloseNav }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const renderAccount = (
-    <Box
-      sx={{
-        my: 3,
-        mx: 2.5,
-        py: 2,
-        px: 2.5,
-        display: 'flex',
-        borderRadius: 1.5,
-        alignItems: 'center',
-        bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
-      }}
-    >
-      <Avatar src={account.photoURL} alt="photoURL" />
-
-      <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
-
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
-        </Typography>
-      </Box>
-    </Box>
-  );
-
   const renderMenu = (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
       {navConfig.map((item) => (
         <NavItem key={item.title} item={item} />
       ))}
     </Stack>
-  );
-
-  const renderUpgrade = (
-    <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
-      <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
-        <Box
-          component="img"
-          src="/assets/illustrations/illustration_avatar.png"
-          sx={{ width: 100, position: 'absolute', top: -50 }}
-        />
-
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6">Get more?</Typography>
-
-          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-            From only $69
-          </Typography>
-        </Box>
-
-        <Button
-          href="https://material-ui.com/store/items/minimal-dashboard/"
-          target="_blank"
-          variant="contained"
-          color="inherit"
-        >
-          Upgrade to Pro
-        </Button>
-      </Stack>
-    </Box>
   );
 
   const renderContent = (
@@ -112,13 +56,9 @@ export default function Nav({ openNav, onCloseNav }) {
     >
       <Logo sx={{ mt: 3, ml: 4 }} />
 
-      {renderAccount}
-
       {renderMenu}
 
       <Box sx={{ flexGrow: 1 }} />
-
-      {renderUpgrade}
     </Scrollbar>
   );
 
@@ -165,9 +105,10 @@ Nav.propTypes = {
 // ----------------------------------------------------------------------
 
 function NavItem({ item }) {
+  const { rejected, unchecked } = useSelector((state) => state.menu);
   const pathname = usePathname();
 
-  const active = item.path === pathname;
+  const active = pathname.includes(item.path);
 
   return (
     <ListItemButton
@@ -180,21 +121,40 @@ function NavItem({ item }) {
         color: 'text.secondary',
         textTransform: 'capitalize',
         fontWeight: 'fontWeightMedium',
+        my: 0.5,
         ...(active && {
-          color: 'primary.main',
-          fontWeight: 'fontWeightSemiBold',
-          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+          color: item.level === 1 ? 'primary.main' : 'text.primary',
+          fontWeight: item.level === 1 ? 'fontWeightSemiBold' : 'fontWeightMedium',
+          bgcolor: (theme) =>
+            alpha(item.level === 1 ? theme.palette.primary.dark : theme.palette.primary.main, 0.15),
           '&:hover': {
-            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
+            bgcolor: (theme) =>
+              alpha(
+                item.level === 1 ? theme.palette.primary.dark : theme.palette.primary.main,
+                0.2
+              ),
           },
         }),
       }}
     >
-      <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
-        {item.icon}
+      {item.icon && (
+        <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
+          <Iconify icon={item.icon} width={24} height={24} />
+        </Box>
+      )}
+      <Box
+        component="span"
+        sx={{ whiteSpace: 'nowrap', '&:first-letter': { textTransform: 'uppercase' } }}
+        textTransform="lowercase"
+      >
+        {item.title.length > 16 ? `${item.title.slice(0, 16)}...` : item.title}
       </Box>
-
-      <Box component="span">{item.title} </Box>
+      {item?.id === 'unchecked' && (
+        <Chip label={unchecked} size="small" sx={{ alignSelf: 'flex-end', ml: 'auto' }} />
+      )}
+      {item?.id === 'rejected' && (
+        <Chip size="small" label={rejected} sx={{ alignSelf: 'flex-end', ml: 'auto' }} />
+      )}
     </ListItemButton>
   );
 }
@@ -202,3 +162,5 @@ function NavItem({ item }) {
 NavItem.propTypes = {
   item: PropTypes.object,
 };
+
+// --------------------------------------------------------------------

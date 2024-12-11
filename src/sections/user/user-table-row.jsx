@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -11,21 +12,18 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import Label from 'src/components/label';
+import { useRouter } from 'src/routes/hooks';
+
+import { useDeleteUserMutation } from 'src/store/reducers/users';
+
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
-  selected,
-  name,
-  avatarUrl,
-  company,
-  role,
-  isVerified,
-  status,
-  handleClick,
-}) {
+export default function UserTableRow({ id, selected, email, avatarUrl, is_admin, handleClick }) {
+  const [deleteUser, { isLoading }] = useDeleteUserMutation();
+  const router = useRouter();
+
   const [open, setOpen] = useState(null);
 
   const handleOpenMenu = (event) => {
@@ -42,25 +40,24 @@ export default function UserTableRow({
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
+        <TableCell align="center">{id}</TableCell>
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" noWrap>
-              {name}
+            <Avatar alt={email} src={avatarUrl} />
+            <Typography
+              color="text.primary"
+              variant="subtitle2"
+              noWrap
+              component={Link}
+              to={`/users/${id}`}
+            >
+              {email}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
-
-        <TableCell>{role}</TableCell>
-
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
-        </TableCell>
+        <TableCell align="center">{is_admin ? 'Да' : 'Нет'}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -79,14 +76,24 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem
+          onClick={() => {
+            router.push(`/users/${id}`);
+          }}
+        >
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Редактировать
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem
+          onClick={async () => {
+            await deleteUser(id);
+          }}
+          sx={{ color: 'error.main' }}
+          disabled={isLoading}
+        >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Удалить
         </MenuItem>
       </Popover>
     </>
@@ -95,11 +102,9 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  company: PropTypes.any,
   handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
-  name: PropTypes.any,
-  role: PropTypes.any,
+  is_admin: PropTypes.any,
+  email: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
+  id: PropTypes.number,
 };

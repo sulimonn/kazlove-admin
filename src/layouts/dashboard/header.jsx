@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,20 +9,18 @@ import IconButton from '@mui/material/IconButton';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { useAuth } from 'src/contexts';
 import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 
-import Searchbar from './common/searchbar';
 import { NAV, HEADER } from './config-layout';
-import AccountPopover from './common/account-popover';
-import LanguagePopover from './common/language-popover';
-import NotificationsPopover from './common/notifications-popover';
 
 // ----------------------------------------------------------------------
 
 export default function Header({ onOpenNav }) {
   const theme = useTheme();
+  const { logout } = useAuth();
 
   const lgUp = useResponsive('up', 'lg');
 
@@ -34,14 +32,21 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      <Searchbar />
-
-      <Box sx={{ flexGrow: 1 }} />
-
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <LanguagePopover />
-        <NotificationsPopover />
-        <AccountPopover />
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1}
+        sx={{ justifySelf: 'flex-end', ml: 'auto' }}
+      >
+        <Button
+          color="primary"
+          endIcon={<Iconify icon="eva:log-out-fill" />}
+          onClick={() => {
+            logout();
+          }}
+        >
+          Выйти
+        </Button>
       </Stack>
     </>
   );

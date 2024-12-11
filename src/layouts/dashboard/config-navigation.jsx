@@ -1,41 +1,35 @@
-import SvgColor from 'src/components/svg-color';
-
 // ----------------------------------------------------------------------
-
-const icon = (name) => (
-  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
-);
 
 const navConfig = [
   {
-    title: 'dashboard',
-    path: '/',
-    icon: icon('ic_analytics'),
+    id: 'users',
+    title: 'Пользователи',
+    path: '/users',
+    icon: 'eva:people-fill',
   },
   {
-    title: 'user',
-    path: '/user',
-    icon: icon('ic_user'),
+    id: 'unchecked',
+    title: 'Непросмотренные',
+    path: '/profiles/unchecked',
+    icon: 'eva:eye-fill',
   },
   {
-    title: 'product',
-    path: '/products',
-    icon: icon('ic_cart'),
+    id: 'active',
+    title: 'Активные анкеты',
+    path: '/profiles/active',
+    icon: 'eva:checkmark-fill',
   },
   {
-    title: 'blog',
-    path: '/blog',
-    icon: icon('ic_blog'),
+    id: 'rejected',
+    title: 'Отклоненные',
+    path: '/profiles/rejected',
+    icon: 'eva:close-fill',
   },
   {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic_disabled'),
+    id: 'filters',
+    title: 'Фильтры',
+    path: '/filters',
+    icon: 'carbon:filter',
   },
 ];
 

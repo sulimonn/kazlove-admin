@@ -18,21 +18,21 @@ export const grey = {
 };
 
 export const primary = {
-  lighter: '#D0ECFE',
-  light: '#73BAFB',
-  main: '#1877F2',
-  dark: '#0C44AE',
-  darker: '#042174',
-  contrastText: '#FFFFFF',
+  lighter: '#ff66c420',
+  light: '##ff80ce',
+  main: '#ff66c4',
+  dark: '#8a005d',
+  darker: '#8a005d',
+  contrastText: '#fff',
 };
 
 export const secondary = {
-  lighter: '#EFD6FF',
-  light: '#C684FF',
-  main: '#8E33FF',
-  dark: '#5119B7',
-  darker: '#27097A',
-  contrastText: '#FFFFFF',
+  lighter: '#8d7de8',
+  light: '#6e5ae2',
+  main: '#271782',
+  dark: '#271782',
+  darker: '#271782',
+  contrastText: '#fff',
 };
 
 export const info = {
@@ -104,16 +104,16 @@ const base = {
 export function palette() {
   return {
     ...base,
-    mode: 'light',
+    mode: 'dark',
     text: {
-      primary: grey[800],
-      secondary: grey[600],
-      disabled: grey[500],
+      primary: grey[300],
+      secondary: grey[500],
+      disabled: grey[600],
     },
     background: {
-      paper: '#FFFFFF',
-      default: grey[100],
-      neutral: grey[200],
+      paper: '#000000',
+      default: grey[900],
+      neutral: grey[800],
     },
     action: {
       ...base.action,

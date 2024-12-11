@@ -13,17 +13,17 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { useAuth } from 'src/contexts';
 import { bgGradient } from 'src/theme/css';
+import { useAddAdminMutation } from 'src/store/reducers/users';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function LoginView() {
+export default function AdminForm() {
   const theme = useTheme();
-  const { login } = useAuth();
+  const [addAdmin] = useAddAdminMutation();
   const [userData, setUserData] = useState();
   const [error, setError] = useState({});
 
@@ -32,7 +32,7 @@ export default function LoginView() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClick = async () => {
-    const response = await login(userData);
+    const response = await addAdmin(userData);
     if (!response?.error) {
       router.push('/');
     } else {
@@ -44,16 +44,16 @@ export default function LoginView() {
     <>
       <Stack spacing={3}>
         <TextField
-          name="social_link"
-          label="Email address"
+          name="email"
+          label="Email"
           type="email"
-          value={userData?.social_link || ''}
-          onChange={(e) => setUserData({ ...userData, social_link: e.target.value })}
+          value={userData?.email || ''}
+          onChange={(e) => setUserData({ ...userData, email: e.target.value })}
         />
 
         <TextField
           name="password"
-          label="Password"
+          label="Пароль"
           type={showPassword ? 'text' : 'password'}
           autoComplete="current-password"
           value={userData?.password || ''}
@@ -83,8 +83,9 @@ export default function LoginView() {
         color="inherit"
         onClick={handleClick}
         sx={{ mt: 3 }}
+        disabled={!userData?.email || !userData?.password}
       >
-        Войти
+        Добавить
       </LoadingButton>
     </>
   );
@@ -112,10 +113,12 @@ export default function LoginView() {
           sx={{
             p: 5,
             width: 1,
-            maxWidth: 420,
+            maxWidth: 520,
           }}
         >
-          <Typography variant="h4">Войти в Kazlove Admin</Typography>
+          <Typography variant="h4" sx={{ mb: 3 }}>
+            Форма добавления администратора
+          </Typography>
 
           {renderForm}
         </Card>

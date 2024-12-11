@@ -3,11 +3,13 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-export const IndexPage = lazy(() => import('src/pages/app'));
-export const BlogPage = lazy(() => import('src/pages/blog'));
+export const ProfilePage = lazy(() => import('src/pages/profile'));
+export const FiltersPage = lazy(() => import('src/pages/filters'));
 export const UserPage = lazy(() => import('src/pages/user'));
+export const UserDataPage = lazy(() => import('src/pages/user-page'));
+export const AdminForm = lazy(() => import('src/pages/add-admin'));
 export const LoginPage = lazy(() => import('src/pages/login'));
-export const ProductsPage = lazy(() => import('src/pages/products'));
+export const ProfilesPage = lazy(() => import('src/pages/profiles'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -23,10 +25,14 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <IndexPage />, index: true },
-        { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
+        { element: <UserPage />, index: true },
+        { path: 'users', element: <UserPage /> },
+        { path: 'users/:id', element: <UserDataPage /> },
+        { path: 'users/add', element: <AdminForm /> },
+        { path: 'profiles', element: <ProfilesPage /> },
+        { path: 'profiles/:type', element: <ProfilesPage /> },
+        { path: 'profiles/:type/:id', element: <ProfilePage /> },
+        { path: 'filters', element: <FiltersPage /> },
       ],
     },
     {

@@ -10,7 +10,9 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { users } from 'src/_mock/user';
+import { useRouter } from 'src/routes/hooks';
+
+import { useFetchUsersQuery } from 'src/store/reducers/users';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -25,17 +27,19 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
+  const { data: users = [] } = useFetchUsersQuery();
+  const router = useRouter();
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('email');
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -87,9 +91,10 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: users.filter((user) => !user.profile),
     comparator: getComparator(order, orderBy),
     filterName,
+    field: 'email',
   });
 
   const notFound = !dataFiltered.length && !!filterName;
@@ -97,15 +102,21 @@ export default function UserPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Users</Typography>
+        <Typography variant="h4">Пользователи</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New User
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={() => router.push('/users/add')}
+        >
+          Новый админ
         </Button>
       </Stack>
 
       <Card>
         <UserTableToolbar
+          numUsers={users.length}
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
@@ -122,11 +133,9 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'id', label: 'ID', align: 'center' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'is_admin', label: 'Доступ админа', align: 'center' },
                   { id: '' },
                 ]}
               />
@@ -136,14 +145,11 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      name={row.name}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
+                      id={row.id}
+                      email={row.email}
+                      is_admin={row.is_admin}
                       selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
+                      handleClick={(event) => handleClick(event, row.email)}
                     />
                   ))}
 

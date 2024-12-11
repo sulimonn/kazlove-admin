@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 
+import { Stack } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -11,7 +12,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserTableToolbar({ numSelected, filterName, onFilterName, numUsers }) {
   return (
     <Toolbar
       sx={{
@@ -27,32 +28,41 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
     >
       {numSelected > 0 ? (
         <Typography component="div" variant="subtitle1">
-          {numSelected} selected
+          {numSelected} выбрано
         </Typography>
       ) : (
-        <OutlinedInput
-          value={filterName}
-          onChange={onFilterName}
-          placeholder="Search user..."
-          startAdornment={
-            <InputAdornment position="start">
-              <Iconify
-                icon="eva:search-fill"
-                sx={{ color: 'text.disabled', width: 20, height: 20 }}
-              />
-            </InputAdornment>
-          }
-        />
+        <Stack direction="row" spacing={1} alignItems="center">
+          <OutlinedInput
+            value={filterName}
+            onChange={onFilterName}
+            placeholder="Поиск..."
+            startAdornment={
+              <InputAdornment position="start">
+                <Iconify
+                  icon="eva:search-fill"
+                  sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                />
+              </InputAdornment>
+            }
+          />
+          <Typography
+            component="div"
+            variant="h6"
+            sx={{ color: 'text.secondary', justifySelf: 'flex-start' }}
+          >
+            Всего: {numUsers}
+          </Typography>
+        </Stack>
       )}
 
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
+        <Tooltip title="Удалить">
           <IconButton>
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
+        <Tooltip title="Фильтр">
           <IconButton>
             <Iconify icon="ic:round-filter-list" />
           </IconButton>
@@ -66,4 +76,5 @@ UserTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
+  numUsers: PropTypes.number,
 };
