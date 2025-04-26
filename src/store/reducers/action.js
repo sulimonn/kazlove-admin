@@ -5,7 +5,7 @@ const initialState = {
   drawerType: '',
   sortOption: {},
   filterOptions: [],
-  city: parseInt(localStorage.getItem('city'), 10) || -1,
+  city: localStorage.getItem('city') ? JSON.parse(localStorage.getItem('city')) : -1,
   gender: localStorage.getItem('gender')
     ? localStorage.getItem('gender').toString().split(',').map(Number)
     : [],
@@ -26,6 +26,9 @@ const initialState = {
   price: parseInt(localStorage.getItem('price'), 10)
     ? localStorage.getItem('price').split(',').map(Number)
     : [],
+  codeSent: localStorage.getItem('codeSent') || false,
+  email: localStorage.getItem('email'),
+  password: localStorage.getItem('password'),
 };
 
 const actionSlice = createSlice({
@@ -67,8 +70,24 @@ const actionSlice = createSlice({
         localStorage.removeItem('city');
       } else {
         state.city = action.payload;
-        localStorage.setItem('city', action.payload);
+        localStorage.setItem('city', JSON.stringify(action.payload));
       }
+    },
+    setEmail: (state, action) => {
+      state.codeSent = true;
+      state.email = action.payload.email;
+      state.password = action.payload.password;
+      localStorage.setItem('codeSent', true);
+      localStorage.setItem('email', action.payload.email);
+      localStorage.setItem('password', action.payload.password);
+    },
+    resetCode: (state, action) => {
+      state.codeSent = false;
+      state.email = null;
+      state.password = null;
+      localStorage.removeItem('codeSent');
+      localStorage.removeItem('email');
+      localStorage.removeItem('password');
     },
     setGender: (state, action) => {
       if (action.payload) {
@@ -107,6 +126,8 @@ export const {
   setGender,
   setSwiperFilter,
   setServices,
+  setEmail,
+  resetCode,
 } = actionSlice.actions;
 
 export default actionSlice.reducer;

@@ -5,6 +5,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 
 export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const FiltersPage = lazy(() => import('src/pages/filters'));
+export const TariffsPage = lazy(() => import('src/pages/tariffs'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const UserDataPage = lazy(() => import('src/pages/user-page'));
 export const AdminForm = lazy(() => import('src/pages/add-admin'));
@@ -33,6 +34,7 @@ export default function Router() {
         { path: 'profiles/:type', element: <ProfilesPage /> },
         { path: 'profiles/:type/:id', element: <ProfilePage /> },
         { path: 'filters', element: <FiltersPage /> },
+        { path: 'tarifs', element: <TariffsPage /> },
       ],
     },
     {

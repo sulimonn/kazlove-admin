@@ -5,7 +5,7 @@ import { Stack, TextField, IconButton, Typography, CircularProgress } from '@mui
 
 import Iconify from 'src/components/iconify';
 
-const FilterItem = ({ filter, deleteFilter, editFilter }) => {
+const TariffTypeItem = ({ filter, deleteFilter, editFilter, index }) => {
   const [name, setName] = React.useState(filter.name);
   const [edit, setEdit] = React.useState(false);
   const [isEditing, setEditing] = React.useState();
@@ -17,24 +17,22 @@ const FilterItem = ({ filter, deleteFilter, editFilter }) => {
 
   return (
     <Stack direction="row">
+      <Iconify icon="eva:menu-fill" width={24} sx={{ color: 'text.secondary', mr: 1 }} />
+      <Typography variant="body1" gutterBottom color="text.primary" pr={1}>
+        {index}.
+      </Typography>
       {!edit ? (
-        <Typography
-          variant="h6"
-          fontWeight={400}
-          gutterBottom
-          color="text.primary"
-          sx={{ flex: 1 }}
-        >
+        <Typography variant="body1" gutterBottom color="text.primary" sx={{ flex: 1 }}>
           {filter.name}
         </Typography>
       ) : (
         <TextField
-          sx={{ flex: 1, fontSize: 19 }}
+          sx={{ flex: 1 }}
+          size="small"
           value={name}
           onChange={(e) => setName(e.target.value)}
           variant="standard"
           autoFocus={edit}
-          size="large"
         />
       )}
       <Stack direction="row" spacing={1}>
@@ -53,7 +51,7 @@ const FilterItem = ({ filter, deleteFilter, editFilter }) => {
               }
               setEditing(false);
             }}
-            disabled={isEditing || filter.name.trim() === ''}
+            disabled={isEditing || name.trim() === ''}
           >
             {!isEditing ? <Iconify icon="carbon:checkmark" /> : <CircularProgress size={20} />}
           </IconButton>
@@ -78,9 +76,10 @@ const FilterItem = ({ filter, deleteFilter, editFilter }) => {
   );
 };
 
-FilterItem.propTypes = {
+TariffTypeItem.propTypes = {
   filter: PropTypes.object.isRequired,
   deleteFilter: PropTypes.func,
   editFilter: PropTypes.func,
+  index: PropTypes.number,
 };
-export default FilterItem;
+export default TariffTypeItem;

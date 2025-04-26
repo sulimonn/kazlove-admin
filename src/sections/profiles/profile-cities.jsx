@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Menu from '@mui/material/Menu';
 import Button from '@mui/material/Button';
@@ -7,11 +8,15 @@ import MenuItem from '@mui/material/MenuItem';
 import { listClasses } from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 
+import { setCity } from 'src/store/reducers/action';
+
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ProfileCities({ setSelectedCity, cities, selectedCity }) {
+export default function ProfileCities({ cities }) {
+  const { city: selectedCity } = useSelector((state) => state.action);
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -23,7 +28,7 @@ export default function ProfileCities({ setSelectedCity, cities, selectedCity })
   };
 
   const handleClick = (event) => {
-    setSelectedCity(event);
+    dispatch(setCity(event));
   };
 
   return (
@@ -85,7 +90,5 @@ export default function ProfileCities({ setSelectedCity, cities, selectedCity })
 }
 
 ProfileCities.propTypes = {
-  setSelectedCity: PropTypes.func,
   cities: PropTypes.array,
-  selectedCity: PropTypes.object,
 };

@@ -7,9 +7,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { A11y, Autoplay, Scrollbar } from 'swiper/modules';
 
 // material-ui
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Stack, Button, Typography } from '@mui/material';
 
-import { useGetProfilePhotosQuery } from 'src/store/reducers/api';
+import Iconify from 'src/components/iconify';
 
 const ProfileCard = ({ girl }) => {
   const { type } = useParams();
@@ -18,18 +18,16 @@ const ProfileCard = ({ girl }) => {
 
   const swiperRef = React.useRef(null);
 
-  const { data = [] } = useGetProfilePhotosQuery(girl.id);
-
   React.useEffect(() => {
-    if (data.length > 0) {
+    if (girl.photos.length > 0) {
       setPhotos(
-        data.map((photo) => ({
+        girl.photos.map((photo) => ({
           id: photo[0],
           upload: `http://176.124.214.164:8000/${photo[1]}`,
         }))
       );
     }
-  }, [data]);
+  }, [girl.photos]);
 
   React.useEffect(() => {
     if (swiperRef.current) {
@@ -39,7 +37,7 @@ const ProfileCard = ({ girl }) => {
 
   return (
     <Box
-      height="490px"
+      height={{ xs: 668, sm: 600 }}
       sx={{
         '& .swiper-horizontal > .swiper-scrollbar, .swiper-scrollbar.swiper-scrollbar-horizontal': {
           top: ' var(--swiper-scrollbar-bottom, 4px)',
@@ -66,7 +64,7 @@ const ProfileCard = ({ girl }) => {
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <Box
-              height="400px"
+              height={{ xs: 550, sm: 500 }}
               width="100%"
               sx={{ mask: 'linear-gradient(360deg, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 20%)' }}
             >
@@ -81,34 +79,34 @@ const ProfileCard = ({ girl }) => {
             </Box>
             <Box position="absolute" bottom={0} p={2} minHeight="140px">
               <Typography variant="h4" color="text.primary">
-                {girl.name} {girl.age}
+                {girl?.name}, {girl?.age}
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight="900" my={1}>
-                {girl?.city?.name}
+                {girl?.city?.name}, {girl?.address}
               </Typography>
               <Typography variant="body2" color="text.secondary" whiteSpace="pre-line" mb={2}>
-                {girl.additional_info.length > 80
+                {girl?.additional_info?.length > 80
                   ? `${girl.additional_info.substring(0, 80)}...`
                   : girl.additional_info}
               </Typography>
               <Typography
                 variant="h5"
                 color="primary.main"
-                sx={{ position: 'absolute', bottom: 5 }}
+                sx={{ position: 'absolute', bottom: 5, whiteSpace: 'nowrap', mt: 2 }}
                 fontWeight="bold"
               >
-                от {girl.price} ₽
+                от {girl?.price} ₸
               </Typography>
             </Box>
           </Link>
         </SwiperSlide>
         <SwiperSlide>
           <Link
-            to={`/profiles/${type}/${girl.id}`}
+            to={`/profiles/${type}/${girl?.id}`}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <Box
-              height="400px"
+              height={{ xs: 550, sm: 500 }}
               width="100%"
               sx={{ mask: 'linear-gradient(360deg, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 20%)' }}
             >
@@ -119,22 +117,23 @@ const ProfileCard = ({ girl }) => {
                 loading="lazy"
               />
             </Box>
+
             <Box position="absolute" bottom={0} p={2} minHeight="140px">
               <Typography variant="body1" color="text.secondary" whiteSpace="pre-line" mb={1}>
-                {girl.nationality}, {girl?.profile_type?.name}
+                🙍‍♀️ {girl.nationality}
               </Typography>
               <Typography variant="body1" color="text.secondary" whiteSpace="pre-line" mb={1}>
-                {girl.breast_size} размер груди, {girl.weight}, {girl.height}
+                💝 {girl.breast_size} размер груди, {girl.weight}, {girl.height}
               </Typography>
               <Typography variant="body1" color="text.secondary" whiteSpace="pre-line" mb={2}>
-                {girl?.services?.map((service) => service.name).join(', ')}
+                🌟 {girl?.services?.map((service) => service.name).join(', ')}
               </Typography>
             </Box>
           </Link>
         </SwiperSlide>
         <SwiperSlide>
           <Box
-            height="400px"
+            height={{ xs: 550, sm: 500 }}
             width="100%"
             sx={{ mask: 'linear-gradient(360deg, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 20%)' }}
           >
@@ -175,22 +174,50 @@ const ProfileCard = ({ girl }) => {
                   Показать контакты
                 </Button>
               ) : (
-                <Box>
-                  <Box
-                    component="a"
-                    target="_blank"
-                    href={`tel:${girl.phone}`}
-                    sx={{ color: 'inherit' }}
-                  >
-                    {girl.phone}
-                  </Box>
-                  <a href={`mailto:${girl.email}`} style={{ textDecoration: 'none' }}>
-                    {girl.email}
-                  </a>
-                </Box>
+                <Stack direction="column" spacing={0.5}>
+                  {girl.phone && (
+                    <Button
+                      component="a"
+                      href={`tel:${girl.phone}`}
+                      variant="outlined"
+                      sx={{ flex: 1 }}
+                      startIcon={<Iconify icon="eva:phone-fill" />}
+                    >
+                      <Typography variant="body1" color="text.primary">
+                        {girl.phone}
+                      </Typography>
+                    </Button>
+                  )}
+                  {girl?.telegram && (
+                    <Button
+                      component="a"
+                      href={`https://t.me/${girl.telegram}`}
+                      variant="outlined"
+                      sx={{ flex: 1 }}
+                      startIcon={<Iconify icon="eva:telegram-fill" />}
+                    >
+                      <Typography variant="body1" color="text.primary">
+                        {girl.telegram}
+                      </Typography>
+                    </Button>
+                  )}
+                  {girl?.whatsapp && (
+                    <Button
+                      component="a"
+                      href={`https://wa.me/${girl.whatsapp}`}
+                      variant="outlined"
+                      sx={{ flex: 1 }}
+                      startIcon={<Iconify icon="eva:whatsapp-fill" />}
+                    >
+                      <Typography variant="body1" color="text.primary">
+                        {girl.whatsapp}
+                      </Typography>
+                    </Button>
+                  )}
+                </Stack>
               )}
               <Link
-                to={`/profiles/${type}/${girl.id}`}
+                to={`/profiles/${type}/${girl?.id}`}
                 style={{
                   textDecoration: 'none',
                   width: '100%',
@@ -198,7 +225,7 @@ const ProfileCard = ({ girl }) => {
                   justifyContent: 'stretch',
                 }}
               >
-                <Button variant="outlined" color="secondary" sx={{ width: '100%' }}>
+                <Button variant="outlined" color="primary" sx={{ width: '100%' }}>
                   Больше деталей
                 </Button>
               </Link>

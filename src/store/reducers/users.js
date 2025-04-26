@@ -10,7 +10,7 @@ const user = apiSlice.injectEndpoints({
     editUser: builder.mutation({
       query: (data) => ({
         url: `/users/${data.id}`,
-        method: 'PATCH',
+        method: 'PUT',
         body: data,
       }),
       invalidatesTags: ['User'],
@@ -42,6 +42,28 @@ const user = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+    resendCode: builder.mutation({
+      query: (email) => ({
+        url: `/send-verification-email`,
+        method: 'POST',
+        body: email,
+      }),
+    }),
+    verifyEmail: builder.mutation({
+      query: (email) => ({
+        url: `/verify`,
+        method: 'POST',
+        body: email,
+      }),
+    }),
+    updateBalance: builder.mutation({
+      query: (data) => ({
+        url: `/users/${data.id}/balance`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -53,6 +75,9 @@ export const {
   useGetUserQuery,
   useDeleteUserMutation,
   useAddAdminMutation,
+  useResendCodeMutation,
+  useVerifyEmailMutation,
+  useUpdateBalanceMutation,
 } = user;
 
 export default user;

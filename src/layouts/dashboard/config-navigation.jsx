@@ -31,6 +31,12 @@ const navConfig = [
     path: '/filters',
     icon: 'carbon:filter',
   },
+  {
+    id: 'tarifs',
+    title: 'Тарифы',
+    path: '/tarifs',
+    icon: 'ion:cash-outline',
+  },
 ];
 
 export default navConfig;

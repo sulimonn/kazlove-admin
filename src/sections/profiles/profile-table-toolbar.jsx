@@ -6,8 +6,6 @@ import { Stack, Button } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useFetchCitiesQuery } from 'src/store/reducers/api';
-
 import Iconify from 'src/components/iconify';
 
 import ProfileCities from './profile-cities';
@@ -22,8 +20,8 @@ export default function ProfileTableToolbar({
   setSelectedCity,
   viewAs,
   setViewAs,
+  cities,
 }) {
-  const { data: cities = [] } = useFetchCitiesQuery();
   const [openFilter, setOpenFilter] = useState(false);
 
   const handleFilterByName = (event) => {
@@ -121,4 +119,5 @@ ProfileTableToolbar.propTypes = {
   setSelectedCity: PropTypes.func,
   viewAs: PropTypes.string,
   setViewAs: PropTypes.func,
+  cities: PropTypes.array,
 };

@@ -8,7 +8,7 @@ export default function ProfilePage() {
   return (
     <>
       <Helmet>
-        <title> Фильтры | KazLove </title>
+        <title> Профиль | KazLove Admin </title>
       </Helmet>
 
       <ProfileView />

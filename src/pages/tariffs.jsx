@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import AdminForm from 'src/sections/user/admin-form';
+import { TariffsView } from 'src/sections/tariffs/view';
 
 // ----------------------------------------------------------------------
 
-export default function FilterPage() {
+export default function TariffsPage() {
   return (
     <>
       <Helmet>
-        <title> Админ | KazLove Admin </title>
+        <title> Тарифы | KazLove Admin </title>
       </Helmet>
 
-      <AdminForm />
+      <TariffsView />
     </>
   );
 }

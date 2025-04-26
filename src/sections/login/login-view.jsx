@@ -23,21 +23,30 @@ import Iconify from 'src/components/iconify';
 
 export default function LoginView() {
   const theme = useTheme();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [userData, setUserData] = useState();
   const [error, setError] = useState({});
 
-  const router = useRouter();
-
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = async () => {
-    const response = await login(userData);
-    if (!response?.error) {
-      router.push('/');
-    } else {
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError({}); // Clear previous errors
+    const errorResponse = await login(userData);
+
+    if (errorResponse) {
       setError({ submit: 'Something went wrong. Please try again.' });
+      return;
     }
+
+    // Wait for state updates to reflect authentication
+    setTimeout(() => {
+      if (isAuthenticated === true && user?.is_admin === 1) {
+        router.push('/');
+      }
+    }, 2000); // Short delay to ensure state is updated
   };
 
   const renderForm = (
@@ -81,7 +90,7 @@ export default function LoginView() {
         type="submit"
         variant="contained"
         color="inherit"
-        onClick={handleClick}
+        onClick={handleSubmit}
         sx={{ mt: 3 }}
       >
         Войти
@@ -107,7 +116,13 @@ export default function LoginView() {
         }}
       />
 
-      <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: 1 }}
+        component="form"
+        onSubmit={handleSubmit}
+      >
         <Card
           sx={{
             p: 5,

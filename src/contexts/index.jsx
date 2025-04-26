@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import React, { useMemo, useState, useEffect, useContext, useCallback, createContext } from 'react';
 
 import { useRouter } from 'src/routes/hooks';
 
 import { useGetMeQuery } from 'src/store/reducers/users';
 import { useLoginMutation, useRegisterMutation } from 'src/store/reducers/auth';
+
+import Loader from 'src/components/scrollbar/Loader';
 
 const AuthContext = createContext();
 
@@ -20,65 +23,67 @@ const AuthProvider = ({ children }) => {
     isFetching,
     isLoading,
     status,
-  } = useGetMeQuery(null, {
-    skip: isAuthenticated || !localStorage.getItem('authToken'),
+  } = useGetMeQuery({
+    skip: !localStorage.getItem('authToken'),
   });
   const [register] = useRegisterMutation();
 
   const router = useRouter();
 
+  const location = useLocation();
+
   useEffect(() => {
     // Check if there is no auth token, redirect immediately
-    if (!localStorage.getItem('authToken')) {
+    if (!localStorage.getItem('authToken') && !location.pathname.startsWith('/login')) {
       router.push('/login');
     }
-  }, [router]);
+  }, [router, location.pathname]);
 
   useEffect(() => {
-    // If still fetching or loading, do not perform any redirection yet
-    if (isFetching || isLoading) {
-      return;
-    }
-
-    if (userData) {
+    if (userData && status === 'fulfilled') {
       setUser(userData);
       setIsAuthenticated(true);
-      if (userData?.is_admin === 1) {
+
+      if (userData.is_admin === 1) {
         setUser(userData);
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
         setUser(null);
-        router.push('/login');
         localStorage.clear();
       }
-    } else if (status === 'rejected') {
+    } else if (!isFetching && !isLoading) {
       setIsAuthenticated(false);
       setUser(null);
-      router.push('/login');
       localStorage.clear();
     }
-  }, [userData, isFetching, isLoading, router, status]);
+  }, [userData, status, isFetching, isLoading]);
 
   const handleLogin = useCallback(
     async (credentials) => {
+      setIsAuthenticated('loading');
       try {
         const { access_token } = await login(credentials).unwrap();
         localStorage.setItem('authToken', access_token);
-        setIsAuthenticated(true);
+        const { data: responseData } = await refetch();
+
+        if (responseData?.is_admin === 1) {
+          router.push('/');
+        }
         return null;
       } catch (error) {
+        console.error('Login failed:', error);
         setIsAuthenticated(false);
-        setUser(null);
+        localStorage.clear();
         return error;
       }
     },
-    [login]
+    [login, refetch, router]
   );
 
   const handleLogout = useCallback(async () => {
     try {
-      localStorage.removeItem('authToken');
+      localStorage.clear();
       setIsAuthenticated(false);
       setUser(null);
       router.push('/login');
@@ -100,9 +105,12 @@ const AuthProvider = ({ children }) => {
           password: credentials.password,
         }).unwrap();
         localStorage.setItem('authToken', access_token);
-        const { data } = await refetch();
-        setUser(() => data);
-        setIsAuthenticated(true);
+
+        const { data: responseData } = await refetch();
+        if (responseData?.is_admin === 1) {
+          setUser(responseData);
+          setIsAuthenticated(true);
+        }
         return null;
       } catch (error) {
         setIsAuthenticated(false);
@@ -126,7 +134,7 @@ const AuthProvider = ({ children }) => {
   );
 
   if (isFetching || isLoading) {
-    return null;
+    return <Loader />;
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

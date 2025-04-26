@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import numeral from 'numeral';
 
 // ----------------------------------------------------------------------
@@ -35,3 +36,24 @@ function result(format, key = '.00') {
 
   return isInteger ? format.replace(key, '') : format;
 }
+
+const groupByPromotionLevel = (arr) =>
+  arr.reduce((acc, girl) => {
+    const level = girl.promotion_level || 0; // Default to 0 if undefined
+    acc[level] = acc[level] || [];
+    acc[level].push(girl);
+    return acc;
+  }, {});
+
+export const shufflePerPromotionLevel = (girls) => {
+  const grouped = groupByPromotionLevel(girls);
+
+  // Shuffle each group separately
+  Object.keys(grouped).forEach((level) => {
+    // eslint-disable-next-line no-undef
+    grouped[level] = _.shuffle(grouped[level]); // Shuffle each promotion level
+  });
+
+  // Merge all shuffled groups back into a single list
+  return Object.values(grouped).flat();
+};

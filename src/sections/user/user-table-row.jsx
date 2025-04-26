@@ -11,6 +11,14 @@ import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+} from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
 
@@ -24,18 +32,55 @@ export default function UserTableRow({ id, selected, email, avatarUrl, is_admin,
   const [deleteUser, { isLoading }] = useDeleteUserMutation();
   const router = useRouter();
 
-  const [open, setOpen] = useState(null);
+  const [openMenu, setOpenMenu] = useState(null);
+  const [open, setOpen] = useState(false);
+  // const [isDeleted, setIsDeleted] = useState({ isDeleted: false, success: false });
 
   const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+    setOpenMenu(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
-    setOpen(null);
+    setOpenMenu(null);
+  };
+  const handleClickOpen = () => {
+    setOpen(true);
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Вы действительно хотите удалить?</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Нажав на кнопку &quot;Да, удалить&quot;, пользователь {email} будет удалён безвозвратно
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="inherit">
+            Отменить
+          </Button>
+          <Button
+            onClick={async () => {
+              const response = await deleteUser(id);
+
+              console.log(response);
+            }}
+            autoFocus
+            color="error"
+          >
+            Да, удалить
+          </Button>
+        </DialogActions>
+      </Dialog>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
@@ -67,8 +112,8 @@ export default function UserTableRow({ id, selected, email, avatarUrl, is_admin,
       </TableRow>
 
       <Popover
-        open={!!open}
-        anchorEl={open}
+        open={!!openMenu}
+        anchorEl={openMenu}
         onClose={handleCloseMenu}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -85,13 +130,7 @@ export default function UserTableRow({ id, selected, email, avatarUrl, is_admin,
           Редактировать
         </MenuItem>
 
-        <MenuItem
-          onClick={async () => {
-            await deleteUser(id);
-          }}
-          sx={{ color: 'error.main' }}
-          disabled={isLoading}
-        >
+        <MenuItem onClick={handleClickOpen} sx={{ color: 'error.main' }} disabled={isLoading}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Удалить
         </MenuItem>

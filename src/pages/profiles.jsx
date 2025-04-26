@@ -8,7 +8,7 @@ export default function ProfilesPage() {
   return (
     <>
       <Helmet>
-        <title> Анкеты | Minimal UI </title>
+        <title> Анкеты | KazLove Admin </title>
       </Helmet>
 
       <ProfilesView />

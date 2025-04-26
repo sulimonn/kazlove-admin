@@ -29,6 +29,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 export default function UserPage() {
   const { data: users = [] } = useFetchUsersQuery();
   const router = useRouter();
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -148,7 +149,7 @@ export default function UserPage() {
                       id={row.id}
                       email={row.email}
                       is_admin={row.is_admin}
-                      selected={selected.indexOf(row.name) !== -1}
+                      selected={selected.indexOf(row.email) !== -1}
                       handleClick={(event) => handleClick(event, row.email)}
                     />
                   ))}

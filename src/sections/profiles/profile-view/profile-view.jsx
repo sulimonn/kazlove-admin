@@ -4,26 +4,27 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   List,
+  Stack,
   Button,
-  ListItem,
   Container,
   TextField,
   Typography,
-  ListItemText,
   CircularProgress,
 } from '@mui/material';
 
-import { SERVER_URL } from 'src/utils/VARS';
+// eslint-disable-next-line import/extensions
+import { SERVER_URL } from 'src/utils/VARS.js';
 
 import { useAuth } from 'src/contexts';
+import { useGetUserQuery } from 'src/store/reducers/users';
 import {
   useGetProfileQuery,
   usePostCommentMutation,
-  useGetProfilePhotosQuery,
   useGetProfileCommentsQuery,
 } from 'src/store/reducers/api';
 
 import ProfileForm from './profile-form';
+import CommentsView from '../comments-view';
 
 const ProfileView = () => {
   const { id } = useParams();
@@ -32,8 +33,15 @@ const ProfileView = () => {
   const [comments, setComments] = useState([]);
 
   const { data: profile = {}, isFetching: isFetchingProfile } = useGetProfileQuery(id);
-  const { data: photos = [], isFetching } = useGetProfilePhotosQuery(profile?.id);
-  const { data: commentData = [] } = useGetProfileCommentsQuery(profile?.id);
+  const { data: commentData = [], isFetching: isFetchingComments } = useGetProfileCommentsQuery(
+    profile?.id,
+    {
+      skip: !profile?.id,
+    }
+  );
+  const { data: currentUser = {}, isFetching: isFetchingUser } = useGetUserQuery(profile?.user_id, {
+    skip: !profile?.user_id,
+  });
   const [postComment, { isLoading }] = usePostCommentMutation();
   // Handle setting comments
   useEffect(() => {
@@ -48,7 +56,7 @@ const ProfileView = () => {
       const commentPayload = {
         text: newComment?.text.trim(),
         user_name: newComment?.user_name,
-        user_id: user?.user_id,
+        user_id: user?.id,
         profile_id: profile?.id,
         date: new Date(),
       };
@@ -57,24 +65,46 @@ const ProfileView = () => {
 
       if (response?.data) {
         setComments((prevComments) => [...prevComments, response.data]);
-        setNewComment({}); // Clear the comment input
+        setNewComment({});
       }
     }
   };
-  if (!profile?.id) {
-    return null;
+
+  if (!profile?.id && !isFetchingProfile) {
+    return (
+      <Container sx={{ pt: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Что то пошло не так
+        </Typography>
+      </Container>
+    );
   }
 
   return (
     <Container sx={{ pt: 4 }}>
+      {profile?.id && profile?.hidden === 1 && (
+        <Stack direction="row" spacing={1} justifyContent="space-between" sx={{ my: 2 }}>
+          <Typography variant="h4" color="error">
+            Профиль скрыт
+          </Typography>
+        </Stack>
+      )}
       <ProfileForm
-        profile={profile}
-        photos={photos.map((photo) => ({
+        photos={profile?.photos?.map((photo) => ({
           ...photo,
           id: photo[0],
           upload: `${SERVER_URL}/${photo[1]}`,
         }))}
-        isFetching={isFetching || isFetchingProfile}
+        media={profile?.media?.map((video) => ({
+          ...video,
+          id: video[0],
+          upload: `${SERVER_URL}/${video[1]}`,
+        }))}
+        profile={profile}
+        isFetching={
+          isFetchingProfile || isFetchingComments || isLoading || !profile?.id || isFetchingUser
+        }
+        currentUser={currentUser}
       />
 
       <Box mt={6}>
@@ -83,25 +113,7 @@ const ProfileView = () => {
         </Typography>
         <List>
           {comments.map((comment) => (
-            <ListItem key={comment.id} alignItems="flex-start">
-              <ListItemText
-                primary={
-                  <Box display="flex" alignItems="center" gap={0.5} mb={0.5} flexWrap="wrap">
-                    <Typography variant="caption" color="grey.500" sx={{ fontWeight: 700, mr: 1 }}>
-                      Автор • {comment.user_name}.
-                    </Typography>
-                    <Typography variant="caption" color="grey.500">
-                      {new Date(comment.date).toLocaleDateString('ru-RU')}
-                    </Typography>
-                  </Box>
-                }
-                secondary={
-                  <Typography variant="subtitle1" whiteSpace="pre-line">
-                    {comment.text}
-                  </Typography>
-                }
-              />
-            </ListItem>
+            <CommentsView key={comment.id} comment={comment} />
           ))}
         </List>
 

@@ -36,18 +36,18 @@ const api = apiSlice.injectEndpoints({
     }),
     getProfile: builder.query({
       query: (id) => `/profiles/${id}`,
-      providesTags: ['Profile'],
+      providesTags: ['Profile', 'City', 'Tariffs'],
     }),
     fetchCities: builder.query({
       query: () => '/cities/all',
-      providesTags: ['City'],
+      providesTags: ['City', 'Tariffs'],
     }),
     deleteCity: builder.mutation({
       query: (id) => ({
         url: `/cities/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['City'],
+      invalidatesTags: ['City', 'Tariffs'],
     }),
     editCity: builder.mutation({
       query: (data) => ({
@@ -55,7 +55,7 @@ const api = apiSlice.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ['City'],
+      invalidatesTags: ['City', 'Tariffs'],
     }),
     addCity: builder.mutation({
       query: (data) => ({
@@ -63,23 +63,23 @@ const api = apiSlice.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['City'],
+      invalidatesTags: ['City', 'Tariffs'],
     }),
     addType: builder.mutation({
       query: (data) => ({
-        url: '/profile_types',
+        url: '/service_types',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['Type'],
     }),
     fetchTypes: builder.query({
-      query: () => '/profile_types/all',
+      query: () => '/service_types/all',
       providesTags: ['Type'],
     }),
     editType: builder.mutation({
       query: (data) => ({
-        url: `/profile_types/${data.id}`,
+        url: `/service_types/${data.id}`,
         method: 'PUT',
         body: data,
       }),
@@ -87,7 +87,7 @@ const api = apiSlice.injectEndpoints({
     }),
     deleteType: builder.mutation({
       query: (id) => ({
-        url: `/profile_types/${id}`,
+        url: `/service_types/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Type'],
@@ -98,11 +98,7 @@ const api = apiSlice.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Service'],
-    }),
-    fetchServices: builder.query({
-      query: () => '/services/all',
-      providesTags: ['Service'],
+      invalidatesTags: ['Type'],
     }),
     addServiceToProfile: builder.mutation({
       query: (data) => ({
@@ -110,7 +106,7 @@ const api = apiSlice.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Service'],
+      invalidatesTags: ['Service', 'Profile'],
     }),
     updateServiceToProfile: builder.mutation({
       query: (data) => ({
@@ -118,7 +114,7 @@ const api = apiSlice.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ['Service'],
+      invalidatesTags: ['Service', 'Profile'],
     }),
     deleteServiceFromProfile: builder.mutation({
       query: (data) => ({
@@ -126,14 +122,14 @@ const api = apiSlice.injectEndpoints({
         method: 'DELETE',
         body: data,
       }),
-      invalidatesTags: ['Service'],
+      invalidatesTags: ['Profile'],
     }),
     deleteService: builder.mutation({
       query: (id) => ({
         url: `/services/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Service'],
+      invalidatesTags: ['Type'],
     }),
     editService: builder.mutation({
       query: (data) => ({
@@ -141,7 +137,7 @@ const api = apiSlice.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ['Service'],
+      invalidatesTags: ['Type'],
     }),
     postPhotos: builder.mutation({
       query: ({ data, profile_id }) => {
@@ -208,6 +204,83 @@ const api = apiSlice.injectEndpoints({
       query: (user_id) => `/comments/user/${user_id}`,
       providesTags: ['Comments'],
     }),
+    addTariff: builder.mutation({
+      query: (data) => ({
+        url: '/tariffs',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Tariffs'],
+    }),
+    fetchTariffs: builder.query({
+      query: () => '/tariffs/all',
+      providesTags: ['Tariffs', 'City'],
+    }),
+    editTariff: builder.mutation({
+      query: (data) => ({
+        url: `/tariffs/${data.id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Tariffs', 'City'],
+    }),
+    deleteTariff: builder.mutation({
+      query: (id) => ({
+        url: `/tariffs/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Tariffs', 'City'],
+    }),
+    bendTariffToCity: builder.mutation({
+      query: (data) => ({
+        url: '/tariffs/cities',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Tariffs', 'City'],
+    }),
+    fetchTariffTypes: builder.query({
+      query: () => '/tariff-types/all',
+      providesTags: ['Tariffs', 'Profile'],
+    }),
+    postTariffType: builder.mutation({
+      query: (data) => ({
+        url: '/tariff-types',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Tariffs'],
+    }),
+    editTariffType: builder.mutation({
+      query: (data) => ({
+        url: `/tariff-types/${data.id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Tariffs'],
+    }),
+    deleteTariffType: builder.mutation({
+      query: (id) => ({
+        url: `/tariff-types/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Tariffs'],
+    }),
+    postMedia: builder.mutation({
+      query: ({ profile_id, data }) => ({
+        url: `/profiles/${profile_id}/media`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Media', 'Profile'],
+    }),
+    deleteMedia: builder.mutation({
+      query: ({ profile_id, id }) => ({
+        url: `/profiles/${profile_id}/media/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Media', 'Profile'],
+    }),
   }),
 });
 
@@ -243,6 +316,17 @@ export const {
   useAddGenderMutation,
   useGetUserCommentsQuery,
   useUpdateServiceToProfileMutation,
+  useAddTariffMutation,
+  useFetchTariffsQuery,
+  useEditTariffMutation,
+  useDeleteTariffMutation,
+  useBendTariffToCityMutation,
+  useFetchTariffTypesQuery,
+  usePostTariffTypeMutation,
+  useEditTariffTypeMutation,
+  useDeleteTariffTypeMutation,
+  usePostMediaMutation,
+  useDeleteMediaMutation,
 } = api;
 
 export default api;

@@ -8,7 +8,7 @@ export default function FilterPage() {
   return (
     <>
       <Helmet>
-        <title> Фильтры | KazLove </title>
+        <title> Фильтры | KazLove Admin </title>
       </Helmet>
 
       <FilterView />

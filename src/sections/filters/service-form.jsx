@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Box, Card, Stack, Button, TextField, Typography } from '@mui/material';
 
-import FilterItem from './filter-item';
+import ServiceTypeItem from './service-type-item';
 
 const shakeAnimation = keyframes`
   10%, 90% {
@@ -21,7 +21,21 @@ const shakeAnimation = keyframes`
   }
 `;
 
-const Form = ({ values, title, deleteFilter, editFilter, addFilter, isAdding, parent }) => {
+const ServiceForm = ({
+  values,
+  title,
+  deleteFilter,
+  editFilter,
+  addFilter,
+  isAdding,
+  refetch,
+  isFetching,
+}) => {
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
   const [name, setName] = useState({
     name: '',
     type: 'primary',
@@ -108,22 +122,30 @@ const Form = ({ values, title, deleteFilter, editFilter, addFilter, isAdding, pa
         </Typography>
         <Stack
           sx={{
-            height: 100,
+            height: '100%',
             overflow: 'auto',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1,
-            p: 2,
+            p: 1,
+            '& .MuiAccordion-root.Mui-expanded': {
+              py: 0,
+            },
+            '& .MuiAccordion-root::before': {
+              opacity: '0 !important',
+            },
+            '& .MuiAccordion-root': {
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+            },
           }}
         >
-          {[
-            ...values.filter((item) => (name.name !== '' ? item.name.includes(name.name) : item)),
-          ].map((data) => (
-            <FilterItem
-              filter={data}
+          {values.map((data) => (
+            <ServiceTypeItem
               key={data.id}
-              deleteFilter={deleteFilter}
-              editFilter={editFilter}
+              serviceType={data}
+              expanded={expanded}
+              handleChange={handleChange}
+              refetch={refetch}
+              isFetching={isFetching}
             />
           ))}
         </Stack>
@@ -132,14 +154,15 @@ const Form = ({ values, title, deleteFilter, editFilter, addFilter, isAdding, pa
   );
 };
 
-Form.propTypes = {
+ServiceForm.propTypes = {
   values: PropTypes.array.isRequired,
   title: PropTypes.string,
   deleteFilter: PropTypes.func,
   editFilter: PropTypes.func,
   addFilter: PropTypes.func,
   isAdding: PropTypes.bool,
-  parent: PropTypes.string,
+  refetch: PropTypes.func,
+  isFetching: PropTypes.bool,
 };
 
-export default Form;
+export default ServiceForm;

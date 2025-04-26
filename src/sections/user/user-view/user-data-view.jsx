@@ -1,7 +1,16 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Box, List, ListItem, Container, Typography, ListItemText } from '@mui/material';
+import {
+  Box,
+  List,
+  Stack,
+  Button,
+  ListItem,
+  Container,
+  Typography,
+  ListItemText,
+} from '@mui/material';
 
 import { useGetUserQuery } from 'src/store/reducers/users';
 import { useGetUserCommentsQuery } from 'src/store/reducers/api';
@@ -10,8 +19,10 @@ import { ProfileView } from '../../profiles/profile-view';
 
 const UserDataView = () => {
   const { id } = useParams();
-  const { data: user = {} } = useGetUserQuery(id);
+  const { data: user = {}, isFetching } = useGetUserQuery(id);
   const { data: userComments = [] } = useGetUserCommentsQuery(id);
+  const [addProfile, setAddProfile] = React.useState(false);
+  console.log(user);
 
   return (
     <Container>
@@ -19,7 +30,15 @@ const UserDataView = () => {
         Пользователь: {user?.email}
       </Typography>
 
-      <ProfileView />
+      {!addProfile ? (
+        <Stack spacing={3}>
+          <Button variant="contained" onClick={() => setAddProfile(true)}>
+            Добавить профиль
+          </Button>
+        </Stack>
+      ) : (
+        <ProfileView user={user} isFetching={isFetching} />
+      )}
 
       <Box mt={6} px={2}>
         <Typography variant="h4" gutterBottom>
